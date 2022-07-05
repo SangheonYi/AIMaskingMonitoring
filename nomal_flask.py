@@ -1,7 +1,8 @@
 from flask import Flask, request
-from transformers import ElectraTokenizerFast, ElectraForTokenClassification
+import torch
+from transformers import ElectraTokenizerFast, ElectraForTokenClassification, TokenClassificationPipeline
 import os, psutil
-from kiwipiepy import Kiwi
+import gc
 
 process = psutil.Process(os.getpid())
 count = 0
@@ -11,23 +12,25 @@ app = Flask(__name__)
 model = None
 tokenizer = None
 kiwi = None
+pipeline = None
 
 def init_pipeline():
     global tokenizer
     global model
-    global kiwi
+    global pipeline
 
-    # init kiwi
-    kiwi=Kiwi()
     tokenizer = ElectraTokenizerFast.from_pretrained("./model")
-    model = ElectraForTokenClassification.from_pretrained("./model")
+    # model = ElectraForTokenClassification.from_pretrained("./model")
+    # pipeline = TokenClassificationPipeline(model=model, tokenizer=tokenizer, framework='pt')
 
 @app.route('/process_memory', methods=['GET'])
 def get_process_memory():
     global start_memory
+    global count
     memory = round(process.memory_info().rss / 1024 ** 2, 3)
-    if count == 1:
+    if count == 0:
         start_memory = memory
+    count += 1
     print("memory usages:", memory)
     print("memory start, end, differencies:", start_memory, memory, round(memory - start_memory, 3))
     return str(memory)
@@ -35,14 +38,16 @@ def get_process_memory():
 @app.route('/pii_demo', methods=['POST'])
 def pii_demo():
     text = request.get_json(silent=True)["text"]
-    splitted_text = kiwi.split_into_sents(text)
-    inputs = [splitted_line.text for splitted_line in splitted_text]
-    inputs = tokenizer(inputs, 
-            return_tensors='pt')
-    print(f"result len: {len(model(**inputs))}")
+    print(len(text * 100))
+    with torch.no_grad():
+        inputs = tokenizer(text * 100, 
+                return_tensors='pt',
+                truncation=True,
+                padding=True)
+    # pipeline(text)
     return "done"
 
 if __name__ == '__main__':
     init_pipeline()
     app.config['JSON_AS_ASCII'] = False
-    app.run(debug=True)
+    app.run(debug=False)
