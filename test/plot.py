@@ -13,10 +13,8 @@ def draw_log(graph, target):
         graph.set_title(f"{torch.__version__} {target} log {round(statistics.mean(data), 3)}")
 
 
-axis = pl.subplots(2, 1, figsize=(20, 10))[1]
+axis = pl.subplots(1, 1, figsize=(20, 10))[1]
 pl.subplots_adjust(left=0.03, bottom=0.05, right=0.98, top=0.98, wspace=1, hspace=0.1)
 
-draw_log(axis[0], 'memory')
-
-draw_log(axis[1], 'time')
+draw_log(axis, 'memory')
 pl.savefig('test.png')

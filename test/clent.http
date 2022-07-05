@@ -1,0 +1,6 @@
+POST http://127.0.0.1:5000/pii_demo HTTP/1.1
+content-type: application/json
+
+{
+    "text": ["이상헌은 집에 가고 싶지만 퇴근 시간이 4시간 남았다. 4시간 동안 운동하면 몸무게 60kg이 될 수 있다."]
+}
