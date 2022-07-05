@@ -1,4 +1,6 @@
 import matplotlib.pyplot as pl
+import statistics
+import torch
 
 def draw_log(graph, target):
       with open(target + '_log.txt', 'r', encoding='utf-8') as file:
@@ -8,11 +10,11 @@ def draw_log(graph, target):
         margin = x_size // 400
         graph.set_xlim(-margin, x_size + margin)
         graph.plot(range(x_size), data[:x_size])
-        graph.set_title(target + ' log')
+        graph.set_title(f"{torch.__version__} {target} log {round(statistics.mean(data), 3)}")
 
 
-axis = pl.subplots(2, 1, figsize=(50, 10))[1]
-pl.subplots_adjust(left=0.02, bottom=0.05, right=0.98, top=1, wspace=1, hspace=0.1)
+axis = pl.subplots(2, 1, figsize=(20, 10))[1]
+pl.subplots_adjust(left=0.03, bottom=0.05, right=0.98, top=0.98, wspace=1, hspace=0.1)
 
 draw_log(axis[0], 'memory')
 
