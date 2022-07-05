@@ -36,7 +36,8 @@ def stamp_memory():
 
 def make_body():
     return {
-        "text": [sample_str for _ in range(sentence_count)]
+        # "text": [sample_str for _ in range(sentence_count)]
+        "text": [sample_str * sentence_count]
     }
 
 class pii_demo_test(unittest.TestCase):
