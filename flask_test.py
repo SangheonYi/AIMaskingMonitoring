@@ -4,8 +4,11 @@ import matplotlib.pyplot as pl
 import statistics
 import torch
 import time
-sample_str = "특히 둘째 출산 후 몸무게가 63kg까지 치솟았다고 밝혔지만 체중 증가가 무색할 정도로 변함없는 비주얼을 자랑해 감탄을 안겼다."
-req_count = 50
+import threading
+
+# sample_str = "특히 둘째 출산 후 몸무게가 63kg까지 치솟았다고 밝혔지만 체중 증가가 무색할 정도로 변함없는 비주얼을 자랑해 감탄을 안겼다."
+# sample_str = f"{1}"
+req_count = 100
 paragraph_count = 1
 sentence_count = 100
 host = 'http://localhost:5000'
@@ -40,7 +43,8 @@ def make_body():
     return {
         "batches": [{
             "path": "~/app.xml",
-            "text": [sample_str * sentence_count for _ in range(paragraph_count)]
+            # "text": [sample_str for _ in range(sentence_count)]
+            "text": [f"{i}" for i in range(sentence_count)]
         }],
         "labels": ["SS_NAME", "SS_WEIGHT"]
     }
@@ -55,15 +59,15 @@ class pii_demo_test(unittest.TestCase):
         print('request lines:', sentence_count)
 
     def test_memory(self):
-        stamp_memory()
+        # stamp_memory()
         for i in range(req_count):
             print(f'request count: {i}')
             resp = requests.post(host + '/pii_demo', json=self.request_body, headers=self.headers).json()
-            spent = resp['spent'] 
-            with open('time_log.txt', 'a', encoding='utf-8') as time_log:
-                time_log.write(f'{spent}, ')
-            stamp_memory()
-        draw_by_unittest()
+            # spent = resp['spent'] 
+            # with open('time_log.txt', 'a', encoding='utf-8') as time_log:
+                # time_log.write(f'{spent}, ')
+            # stamp_memory()
+        # draw_by_unittest()
 
 if __name__ == '__main__':
     with open('memory_log.txt', 'w', encoding='utf-8') as memory_log:
